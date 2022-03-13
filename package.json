@@ -1,0 +1,19 @@
+{
+  "name": "simulaciontrescuerpos",
+  "version": "1.0.0",
+  "description": "La simulación de tres cuerpos",
+  "main": "tresCuerpos.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Fabian-Ojeda/SimulacionTresCuerpos.git"
+  },
+  "author": "Fabián Ojeda",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Fabian-Ojeda/SimulacionTresCuerpos/issues"
+  },
+  "homepage": "https://github.com/Fabian-Ojeda/SimulacionTresCuerpos#readme"
+}

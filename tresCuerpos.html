@@ -1,0 +1,1640 @@
+<style>
+
+    .ThreeBodyProblem-hasTopMarginSmall {
+      margin-top: 5px;
+    }
+    
+    .ThreeBodyProblem-hasNegativeBottomMarginNormal {
+      margin-bottom: -10px;
+    }
+    
+    /*
+      Elementos
+      --------
+    */
+    
+    .ThreeBodyProblem-alert {
+      color: red;
+      border: 1px solid red;
+      background: #ffeeee;
+      padding: 5px;
+    }
+    
+    .ThreeBodyProblem-container {
+      background-color: #000000;
+      position: relative;
+      height: 700px;
+      background-image: url("https://evgenii.com/image/blog/2018-09-27-three-body-problem-simulator/starry_night.png");
+      background-position: center bottom;
+      background-repeat: repeat;
+      background-size: 874px 780px;
+    }
+    
+    .ThreeBodyProblem-isTextCentered { text-align: center; }
+    .ThreeBodyProblem-isHiddenBlock { display: none; }
+    
+    
+    .ThreeBodyProblem-centerOfMass {
+      position: absolute;
+      width: 11px;
+      top: 50%;
+      left: 50%;
+      margin-left: -5.5px;
+      margin-top: -5.5px;
+      z-index: 998;
+    }
+    
+    .ThreeBodyProblem-earth,
+    .ThreeBodyProblem-jupiter,
+    .ThreeBodyProblem-sun {
+      position: absolute;
+      width: 60px;
+      top: -1000px;
+      left: -1000px;
+      z-index: 1000;
+    }
+    
+    .ThreeBodyProblem-bodyImage {
+      position: absolute;
+      width: 100%;
+      top: 0px;
+      left: 0px;
+    }
+    
+    .ThreeBodyProblem-spin {
+      -webkit-animation:spin .5s linear infinite;
+      -moz-animation:spin .5s linear infinite;
+      animation:spin .5s linear infinite;
+    }
+    
+    @-moz-keyframes spin { 100% { -moz-transform: rotate(-360deg); } }
+    @-webkit-keyframes spin { 100% { -webkit-transform: rotate(-360deg); } }
+    @keyframes spin { 100% { -webkit-transform: rotate(-360deg); transform:rotate(-360deg); } }
+    
+    .ThreeBodyProblem-canvas { display: block; }
+    
+    /* Impedir que el navegador muestre la selección cuando se toca el elemento */
+    .isUnselectable {
+      -webkit-touch-callout: none;
+      -webkit-user-select: none; /* Chrome/Safari */
+      -moz-user-select: none; /* Firefox */
+      -ms-user-select: none; /* IE10+ */
+      -o-user-select: none;
+      user-select: none;
+      -webkit-tap-highlight-color: rgba(0, 0, 0, 0)
+    }
+    
+    /*
+     pantalla  Hud 
+      ---------
+    */
+    
+    .ThreeBodyProblem-hudContainer {
+      position: absolute;
+      height: 100%;
+      width: 100%;
+      z-index: 1001;
+      left: 0;
+      top: 0;
+    }
+    
+    .ThreeBodyProblem-hudContainerChild {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    /*
+      botones izquierda
+      ---------
+    */
+    
+    
+    .ThreeBodyProblem-leftBottomButtonCantainer {
+      position: absolute;
+      display: block;
+      left: 15px;
+      right: 15px;
+      bottom: 10px;
+      height: 40px;
+    }
+    
+    .ThreeBodyProblem-leftBottomButton {
+      display: block;
+      height: 40px;
+      width: 40px;
+      float: left;
+    }
+    
+    .ThreeBodyProblem-leftBottomImage {
+      height: 100%;
+      border : 0;
+    }
+    
+    .ThreeBodyProblem-doesChangeOpacityOnHover {
+      opacity: 0.8;
+      filter: alpha(opacity=80);
+    }
+    
+    .ThreeBodyProblem-doesChangeOpacityOnHover:hover {
+      opacity: 1.0;
+      filter: alpha(opacity=100);
+    }
+    
+    /*
+      boton recarga
+      ---------
+    */
+    
+    .ThreeBodyProblem-reload {
+      position: absolute;
+      display: block;
+      bottom: 10px;
+      right: 15px;
+      width: 40px;
+      height: 40px;
+    }
+    
+    .ThreeBodyProblem-reloadIcon {
+      width: 100%;
+      border : 0;
+    }
+    
+    /*
+      deslizante
+      ---------
+    */
+    
+    .ThreeBodyProblem-slider{
+      margin: 0 auto;
+    }
+    
+    .ThreeBodyProblem-sliderSun .SickSlider-head {
+      background-color: #ff9400;
+    }
+    
+    .ThreeBodyProblem-sliderEarth .SickSlider-head {
+      background-color: #6780FF;
+    }
+    
+    .ThreeBodyProblem-sliderJupiter .SickSlider-head {
+      background-color: #4BCF79;
+    }
+    
+    /*
+    
+    boton
+    --------------
+    
+    */
+    
+    .ThreeBodyProblem-button {
+      margin: 5px;
+      padding: 5px 10px 3px 10px;
+      display: inline-block;
+      background-color: #ff6c00;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 30% 10%/80%;
+      border: none;
+      cursor: pointer;
+    }
+    
+    .ThreeBodyProblem-button--isSelected {
+      background-color: #a66000;
+    }
+    
+    /*
+    
+    control deslizante pulido
+    --------------
+    
+    */
+    
+    .SickSlider {
+      position: relative;
+      height: 60px;
+      cursor: pointer;
+    }
+    
+    .SickSlider-stripe {
+      height: 5px;
+      width: 100%;
+      background-color: #999999;
+      /*border: 1px solid #a66000;*/
+      position: absolute;
+      top: 28px;
+      left: 0px;
+    }
+    
+    .SickSlider-head {
+      position: absolute;
+      top: 10px;
+      left: 0;
+      width: 30px;
+      height: 40px;
+      background-color: #999999;
+      border: 1px solid #FFFFFF;
+    }
+    /*--------------------------------javascript----------------------*/
+    </style> 
+    <!--mensaje para el profe :v. -->
+    <p id="ThreeBodyProblem-notSupportedMessage" class="ThreeBodyProblem-alert ThreeBodyProblem-isHiddenBlock">profe este navegador no sirve, pruebe con otro.</p>
+    
+    <div class="ThreeBodyProblem-container isFullScreenWide isUnselectable">
+        <div class='ThreeBodyProblem-sun'><img src='https://evgenii.com/image/blog/2018-09-27-three-body-problem-simulator/sun.png' class='ThreeBodyProblem-spin ThreeBodyProblem-bodyImage' alt='Sun' /></div>
+        <div class='ThreeBodyProblem-earth'><img src='https://evgenii.com/image/blog/2018-09-27-three-body-problem-simulator/earth.png' alt='Earth' class='ThreeBodyProblem-spin ThreeBodyProblem-bodyImage'/></div>
+        <div class='ThreeBodyProblem-jupiter'><img src='https://evgenii.com/image/blog/2018-09-27-three-body-problem-simulator/jupiter_juno.png' alt='Jupiter' class='ThreeBodyProblem-spin ThreeBodyProblem-bodyImage' /></div>
+        <img src='https://evgenii.com/image/blog/2018-09-27-three-body-problem-simulator/center_of_mass.png' alt='Center of mass' class='ThreeBodyProblem-centerOfMass'>
+    
+        <canvas class="ThreeBodyProblem-canvas"></canvas>
+    
+        <div class='ThreeBodyProblem-hudContainer'>
+          <div class='ThreeBodyProblem-hudContainerChild'>
+            <div class='ThreeBodyProblem-leftBottomButtonCantainer'>
+              <a class='ThreeBodyProblem-leftBottomButton ThreeBodyProblem-mass1Button ThreeBodyProblem-doesChangeOpacityOnHover' href='#' title='Mass 1'><img src='https://evgenii.com/image/blog/2018-09-27-three-body-problem-simulator/mass_one_icon.png' alt='Mass 1' class='ThreeBodyProblem-leftBottomImage'></a>
+              <a class='ThreeBodyProblem-leftBottomButton ThreeBodyProblem-mass2Button ThreeBodyProblem-doesChangeOpacityOnHover' href='#' title='Mass 2'><img src='https://evgenii.com/image/blog/2018-09-27-three-body-problem-simulator/mass_two_icon.png' alt='Mass 2' class='ThreeBodyProblem-leftBottomImage'></a>
+              <a class='ThreeBodyProblem-leftBottomButton ThreeBodyProblem-mass3Button ThreeBodyProblem-doesChangeOpacityOnHover' href='#' title='Mass 3'><img src='https://evgenii.com/image/blog/2018-09-27-three-body-problem-simulator/mass_three_icon.png' alt='Mass 3' class='ThreeBodyProblem-leftBottomImage'></a>
+              <a class='ThreeBodyProblem-leftBottomButton ThreeBodyProblem-speedButton ThreeBodyProblem-doesChangeOpacityOnHover' href='#' title='Speed'><img src='https://evgenii.com/image/blog/2018-09-27-three-body-problem-simulator/clock_icon.png' alt='Speed' class='ThreeBodyProblem-leftBottomImage'></a>
+            </div>
+            <a class='ThreeBodyProblem-reload ThreeBodyProblem-doesChangeOpacityOnHover' href='#' title='Reload'><img src='https://evgenii.com/image/blog/2016-09-17-ridiculous-strawberry-picking/reload_icon.png' alt='Restart' class='ThreeBodyProblem-reloadIcon'></a>
+          </div>
+        </div>
+    </div>
+    
+    <div class='ThreeBodyProblem-isTextCentered ThreeBodyProblem-hasTopMarginSmall ThreeBodyProblem-hasNegativeBottomMarginNormal isUnselectable'>
+      <span class='ThreeBodyProblem-sliderLabel'>0.10</span>
+    </div>
+    
+    <div class="SickSlider ThreeBodyProblem-slider isUnselectable" >
+      <div class="SickSlider-stripe"></div>
+      <div class="SickSlider-head"></div>
+    </div>
+    
+    <button class="ThreeBodyProblem-preset ThreeBodyProblem-button ThreeBodyProblem-button--isSelected" data-name="FigureEight">orbita de ocho</button>
+    <button class="ThreeBodyProblem-preset ThreeBodyProblem-button" data-name="SunEarthJupiter">el sol, tierra y otro planeta</button>
+    <button class="ThreeBodyProblem-preset ThreeBodyProblem-button" data-name="LagrangePoint5">ejemplo orbita Lagrange </button>
+    <button class="ThreeBodyProblem-preset ThreeBodyProblem-button" data-name="Kepler16">ejemplo tipo Kepler-16</button>
+    <button class="ThreeBodyProblem-preset ThreeBodyProblem-button" data-name="Chaotic">orbitas caoticas</button>
+    
+    <p class='ThreeBodyProblem-debugOutput'></p>
+    
+    <script>
+    
+    (function(){
+      "use strict";
+      // Un elemento de interfaz de usuario deslizante
+      function SickSlider(sliderElementSelector) {
+        var that = {
+          //Una función que se llamará cuando el usuario cambie la posición del control deslizante.
+          // A la función se le pasará la posición del control deslizante: un número entre 0 y 1.
+          onSliderChange: null,
+         // Almacene el valor del control deslizante anterior para evitar llamar a la función Cambio de diapositiva con el mismo argumento
+          previousSliderValue: -42,
+          didRequestUpdateOnNextFrame: false
+        };
+    
+       // Inicializa el elemento deslizante 
+       // 
+       // Argumentos: 
+       // Selector de elemento deslizante: un selector CSS del elemento deslizante enfermo.
+        that.init = function(sliderElementSelector) {
+          that.slider = document.querySelector(sliderElementSelector);
+          that.sliderHead = that.slider.querySelector(".SickSlider-head");
+          var sliding = false;
+    
+          // Comience a arrastrar el control deslizante
+          // -----------------
+    
+          that.slider.addEventListener("mousedown", function(e) {
+            sliding = true;
+            that.updateHeadPositionOnTouch(e);
+          });
+    
+          that.slider.addEventListener("touchstart", function(e) {
+            sliding = true;
+            that.updateHeadPositionOnTouch(e);
+          });
+    
+          that.slider.onselectstart = function () { return false; };
+    
+          //Control deslizante para terminar de arrastrar
+          // -----------------
+    
+          document.addEventListener("mouseup", function(){
+            sliding = false;
+          });
+    
+          document.addEventListener("dragend", function(){
+            sliding = false;
+          });
+    
+          document.addEventListener("touchend", function(e) {
+            sliding = false;
+          });
+    
+          // Control deslizante de arrastre
+          // -----------------
+    
+          document.addEventListener("mousemove", function(e) {
+            if (!sliding) { return; }
+            that.updateHeadPositionOnTouch(e);
+          });
+    
+          document.addEventListener("touchmove", function(e) {
+            if (!sliding) { return; }
+            that.updateHeadPositionOnTouch(e);
+          });
+    
+          that.slider.addEventListener("touchmove", function(e) {
+            if (typeof e.preventDefault !== 'undefined' && e.preventDefault !== null) {
+              e.preventDefault(); // Evite que la pantalla se deslice en los dispositivos táctiles cuando se arrastra el elemento.
+            }
+          });
+        };
+    
+        
+// Devuelve el valor del control deslizante (un número de 0 a 1) desde la posición del cursor 
+// 
+// Argumentos: 
+// 
+// e: un evento táctil. 
+//
+        that.sliderValueFromCursor = function(e) {
+          var pointerX = e.pageX;
+    
+          if (e.touches && e.touches.length > 0) {
+            pointerX = e.touches[0].pageX;
+          }
+    
+          pointerX = pointerX - that.slider.offsetLeft;
+          var headLeft = (pointerX - 16);
+          if (headLeft < 0) { headLeft = 0; }
+    
+          if ((headLeft + that.sliderHead.offsetWidth) > that.slider.offsetWidth) {
+            headLeft = that.slider.offsetWidth - that.sliderHead.offsetWidth;
+          }
+    
+          
+        // Calcular el valor del control deslizante desde la posición de la cabeza
+          var sliderWidthWithoutHead = that.slider.offsetWidth - that.sliderHead.offsetWidth;
+          var sliderValue = 1;
+    
+          if (sliderWidthWithoutHead !== 0) {
+            sliderValue = headLeft / sliderWidthWithoutHead;
+          }
+    
+          return sliderValue;
+        };
+    
+    
+       // Cambia la posición del control deslizante 
+       // 
+       // Argumentos: 
+       // 
+       // Valor del control deslizante: un valor entre 0 y 1. 
+       //
+        that.changePosition = function(sliderValue) {
+          var headLeft = (that.slider.offsetWidth - that.sliderHead.offsetWidth) * sliderValue;
+          that.sliderHead.style.left = headLeft + "px";
+        };
+    
+       // Actualice la posición del control deslizante y llame a la función de devolución de llamada 
+       // 
+       // Argumentos: 
+       // 
+       // e: un evento táctil. 
+       //
+        that.updateHeadPositionOnTouch = function(e) {
+          var sliderValue = that.sliderValueFromCursor(e);
+    
+          
+        // Maneje el cambio de cabeza solo si cambió significativamente (más del 0.1%)
+          if (Math.round(that.previousSliderValue * 10000) === Math.round(sliderValue * 10000)) { return; }
+          that.previousSliderValue = sliderValue;
+    
+          if (!that.didRequestUpdateOnNextFrame) {
+            
+        // Actualice el control deslizante en el próximo redibujado, para mejorar el rendimiento
+            that.didRequestUpdateOnNextFrame = true;
+            window.requestAnimationFrame(that.updateOnFrame);
+          }
+        };
+    
+        that.updateOnFrame = function() {
+          that.changePosition(that.previousSliderValue);
+    
+          if (that.onSliderChange) {
+            that.onSliderChange(that.previousSliderValue);
+          }
+    
+          that.didRequestUpdateOnNextFrame = false;
+        };
+    
+        that.init(sliderElementSelector);
+    
+        return that;
+      }
+    
+     // Mostrar mensajes de depuración en pantalla
+      var debug = (function(){
+        var debugOutput = document.querySelector(".ThreeBodyProblem-debugOutput");
+    
+        function print(text) {
+          var date = new Date();
+          debugOutput.innerHTML = text + " " + date.getMilliseconds();
+        }
+    
+        return {
+            print: print,
+          };
+      })();
+    
+     // Integración numérica de Runge-Kutta
+      var rungeKutta = (function() {
+        // h: paso del tiempo
+        // u: variables
+        // derivative: funcion que calcula las derivadas
+        function calculate(h, u, derivative) {
+          var a = [h/2, h/2, h, 0];
+          var b = [h/6, h/3, h/3, h/6];
+          var u0 = [];
+          var ut = [];
+          var dimension = u.length;
+    
+          for (var i = 0; i < dimension; i++) {
+            u0.push(u[i]);
+            ut.push(0);
+          }
+    
+          for (var j = 0; j < 4; j++) {
+            var du = derivative();
+    
+            for (i = 0; i < dimension; i++) {
+              u[i] = u0[i] + a[j]*du[i];
+              ut[i] = ut[i] + b[j]*du[i];
+            }
+          }
+    
+          for (i = 0; i < dimension; i++) {
+            u[i] = u0[i] + ut[i];
+          }
+        }
+    
+        return {
+          calculate: calculate
+        };
+      })();
+    
+     // Calcula la simulación de los tres cuerpos
+      var physics = (function() {
+        var constants = {
+          gravitationalConstant: 6.67408 * Math.pow(10, -11),
+          // Densidad media del cuerpo (kg/m^3). Se utiliza para calcular el radio del cuerpo a partir de su masa.
+          averageDensity: 1410
+        };
+    
+        // estado actual del sistema
+        var state = {
+         // Variables de estado utilizadas en las ecuaciones diferenciales 
+         // Los primeros dos elementos son las posiciones x e y, y los segundos dos son los componentes x e y de la velocidad 
+         // repetidos para tres cuerpos.
+          u: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        };
+    
+       
+         // Condición inicial del modelo. Las condiciones se cargan desde la simulación actualmente seleccionada.
+        var initialConditions = {
+          bodies: 3, // numero de cuerpos
+        };
+    
+        
+        //calcula el radio de el cuerpo en metros basado en su masa
+        function calculateRadiusFromMass(mass, density) {
+          return Math.pow(3/4 * mass / ( Math.PI * density), 1/3);
+        }
+    
+        // Returns the diameters of three bodies in meters
+        // retorna el diametro de los 3 cuerpos en metros.
+        function calculateDiameters() {
+          var diameters = [];
+    
+          
+          //cule a traves de los cuerpos.
+          for (var iBody = 0; iBody < initialConditions.bodies; iBody++) {
+            if (initialConditions.densities !== undefined && initialConditions.densities.length >= initialConditions.bodies-1) {
+              var density = initialConditions.densities[iBody];
+            } else {
+              density = constants.averageDensity;
+            }
+    
+            diameters.push(2 * calculateRadiusFromMass(initialConditions.masses[iBody], density));
+          }
+    
+          return diameters;
+        }
+    
+        function calculateCenterOfMassVelocity(){
+          var centerOfMassVelocity = {x: 0, y: 0};
+          var sumOfMasses = 0;
+    
+          //bucle a traves de los cuerpos
+          for (var iBody = 0; iBody < initialConditions.bodies; iBody++) {
+            var bodyStart = iBody * 4; //Índice inicial para el cuerpo actual en la matriz u
+            centerOfMassVelocity.x += initialConditions.masses[iBody] * state.u[bodyStart + 2];
+            centerOfMassVelocity.y += initialConditions.masses[iBody] * state.u[bodyStart + 3];
+            sumOfMasses += initialConditions.masses[iBody];
+          }
+    
+          centerOfMassVelocity.x /= sumOfMasses;
+          centerOfMassVelocity.y /= sumOfMasses;
+    
+          return centerOfMassVelocity;
+        }
+    
+        function calculateCenterOfMass(){
+          var centerOfMass = {x: 0, y: 0};
+          var sumOfMasses = 0;
+    
+          //bucle a traves de los cuerpos
+          for (var iBody = 0; iBody < initialConditions.bodies; iBody++) {
+            var bodyStart = iBody * 4; // Índice inicial para el cuerpo actual en la matriz u
+            centerOfMass.x += initialConditions.masses[iBody] * state.u[bodyStart + 0];
+            centerOfMass.y += initialConditions.masses[iBody] * state.u[bodyStart + 1];
+            sumOfMasses += initialConditions.masses[iBody];
+          }
+    
+          centerOfMass.x /= sumOfMasses;
+          centerOfMass.y /= sumOfMasses;
+    
+          return centerOfMass;
+        }
+    
+        function resetStateToInitialConditions() {
+          var iBody, bodyStart;
+    
+          //bucle a traves de los cuerpos
+          for (iBody = 0; iBody < initialConditions.bodies; iBody++) {
+            bodyStart = iBody * 4; //Índice inicial para el cuerpo actual en la matriz u
+    
+            var position = initialConditions.positions[iBody];
+            state.u[bodyStart + 0] = position.r * Math.cos(position.theta); // x
+            state.u[bodyStart + 1] = position.r * Math.sin(position.theta); //y
+    
+            var velocity = initialConditions.velocities[iBody];
+            state.u[bodyStart + 2] = velocity.r * Math.cos(velocity.theta); // velocidad x
+            state.u[bodyStart + 3] = velocity.r * Math.sin(velocity.theta); // velocidad y
+          }
+    
+          var centerOfMassVelocity = calculateCenterOfMassVelocity();
+          var centerOfMass = calculateCenterOfMass();
+    
+         // Corregir las velocidades y posiciones de los cuerpos 
+         // para dejar inmóvil el centro de masa en el centro de la pantalla
+          for (iBody = 0; iBody < initialConditions.bodies; iBody++) {
+            bodyStart = iBody * 4; // Índice inicial para el cuerpo actual en la matriz u
+            state.u[bodyStart + 0] -= centerOfMass.x;
+            state.u[bodyStart + 1] -= centerOfMass.y;
+            state.u[bodyStart + 2] -= centerOfMassVelocity.x;
+            state.u[bodyStart + 3] -= centerOfMassVelocity.y;
+          }
+        }
+    
+       // Calcula la aceleración del cuerpo 'iFromBody' // debido a la gravedad de otros cuerpos, // usando la ley de gravitación de Newton. // iFromBody: el índice del cuerpo. 0 es el primer cuerpo, 1 es el segundo cuerpo. 
+       // coordenada: 0 para la coordenada x, 1 para la coordenada y
+        function acceleration(iFromBody, coordinate) {
+          var result = 0;
+          var iFromBodyStart = iFromBody * 4; // Starting index for the body in the u array
+    
+          // Bucle a traves de los cuerpos
+          for (var iToBody = 0; iToBody < initialConditions.bodies; iToBody++) {
+            if (iFromBody === iToBody) { continue; }
+            var iToBodyStart = iToBody * 4; // Índice de inicio para el cuerpo en la matriz u
+    
+           // Distancia entre los dos cuerpos
+            var distanceX = state.u[iToBodyStart + 0] -
+              state.u[iFromBodyStart + 0];
+    
+            var distanceY = state.u[iToBodyStart + 1] -
+              state.u[iFromBodyStart + 1];
+    
+            var distance = Math.sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
+            var gravitationalConstant = 1;
+    
+            if (initialConditions.dimensionless !== true) {
+              gravitationalConstant = constants.gravitationalConstant;
+            }
+    
+            result += gravitationalConstant *
+              initialConditions.masses[iToBody] *
+              (state.u[iToBodyStart + coordinate] - state.u[iFromBodyStart + coordinate]) /
+              (Math.pow(distance, 3));
+          }
+    
+          return result;
+        }
+    
+       
+            // Calcular las derivadas del sistema de ODEs que describen la ecuación de movimiento de los cuerpos
+        function derivative() {
+          var du = new Array(initialConditions.bodies * 4);
+    
+          // bucle a traves d elos cuerpos
+          for (var iBody = 0; iBody < initialConditions.bodies; iBody++) {
+            // Starting index for current body in the u array
+            var bodyStart = iBody * 4;
+    
+            du[bodyStart + 0] = state.u[bodyStart + 0 + 2]; // Velocidad x
+            du[bodyStart + 1] = state.u[bodyStart + 0 + 3]; // Velocidad y
+            du[bodyStart + 2] = acceleration(iBody, 0); // Acceleracion x
+            du[bodyStart + 3] = acceleration(iBody, 1); // Acceleracion y
+          }
+    
+          return du;
+        }
+    
+       // La función principal que se llama en cada cuadro de animación. 
+       // Calcula y actualiza las posiciones actuales de los cuerpos
+        function updatePosition(timestep) {
+          rungeKutta.calculate(timestep, state.u, derivative);
+        }
+    
+        function calculateNewPosition() {
+          // bucle a traves de los cuerpos
+          for (var iBody = 0; iBody < initialConditions.bodies; iBody++) {
+            var bodyStart = iBody * 4; // Índice de inicio para el cuerpo actual en la matriz u
+    
+            state.positions[iBody].x = state.u[bodyStart + 0];
+            state.positions[iBody].y = state.u[bodyStart + 1];
+          }
+        }
+    
+      // Devuelve la mayor distancia de un objeto desde el centro en base a las condiciones iniciales
+        function largestDistanceMeters() {
+          var result = 0;
+    
+          // bucle a traves de los cuerpos
+          for (var iBody = 0; iBody < initialConditions.bodies; iBody++) {
+            var position = initialConditions.positions[iBody];
+            if (result < position.r) {
+              result = position.r;
+            }
+          }
+    
+          return result;
+        }
+    
+        function changeInitialConditions(conditions) {
+          initialConditions.dimensionless = conditions.dimensionless;
+          initialConditions.masses = conditions.masses.slice();
+          initialConditions.positions = conditions.positions;
+          initialConditions.velocities = conditions.velocities;
+          initialConditions.timeScaleFactor = conditions.timeScaleFactor;
+          initialConditions.massSlider = conditions.massSlider;
+          initialConditions.timeScaleFactorSlider = conditions.timeScaleFactorSlider;
+          initialConditions.densities = conditions.densities;
+          initialConditions.paleOrbitalPaths = conditions.paleOrbitalPaths;
+        }
+    
+        return {
+          resetStateToInitialConditions: resetStateToInitialConditions,
+          updatePosition: updatePosition,
+          calculateNewPosition: calculateNewPosition,
+          initialConditions: initialConditions,
+          state: state,
+          calculateDiameters: calculateDiameters,
+          largestDistanceMeters: largestDistanceMeters,
+          changeInitialConditions: changeInitialConditions,
+          constants: constants
+        };
+      })();
+    
+      // dibujar la escena
+      var graphics = (function() {
+        var canvas = null, // elemento canvas DOM
+          context = null, // CONTEXTO DE CANVAS PARA DIBUJAR
+          canvasHeight = 600,
+        // El factor de escala utilizado para dibujar las distancias entre los objetos y sus tamaños 
+        // Actualizado automáticamente en el primer dibujo
+          metersPerPixel = 100,
+          minimumSizePixels=10, // Tamaño mínimo de un objeto en píxeles.
+          maximumSizePixels=80, // Tamaño maximo de un objeto en píxeles.
+          colors = {
+            orbitalPaths: ["#ff8b22","#6c81ff","#4ccd7a"],
+            paleOrbitalPaths: ["#ab681c","#4957ae","#359256"]
+          },
+          // Positions of three bodies in pixels on screen
+          // posicion de los 3 cuerpos en pixeles sobre la pantalla
+          bodyPositions = [
+            {x: null, y: null},
+            {x: null, y: null},
+            {x: null, y: null}
+          ],
+         // Posiciones dibujadas previamente de los dos cuerpos. Se utiliza para dibujar la línea orbital.
+          previousBodyPositions = [
+            {x: null, y: null},
+            {x: null, y: null},
+            {x: null, y: null}
+          ],
+
+          //contiene los elementos DOM de los cuerpos
+          bodyElemenets = [],
+    
+          // tamaño de los cuerpos en pixeles
+          currentBodySizes = [
+            10, 10, 10
+          ],
+          middleX = 1,
+          middleY = 1;
+    
+    
+        function drawBody(position, size, bodyElement) {
+          var left = (position.x - size/2) + 1000;
+          var top = (position.y - size/2) + 1000;
+        
+        // Usando style.transform en lugar de style.left, ya que style.left era 
+        // notablemente más lento en Chrome móvil
+          bodyElement.style.transform = "translate(" + left + "px," + top + "px)";
+        }
+    
+        // Actualiza los tamaños de los objetos 
+        // tamaños: los tamaños de los objetos en metros
+        function updateObjectSizes(sizes) {
+          //bucle a traves de los cuerpos
+          for (var iBody = 0; iBody < sizes.length; iBody++) {
+            currentBodySizes[iBody] =  sizes[iBody] / metersPerPixel;
+    
+            if (currentBodySizes[iBody] < minimumSizePixels) {
+              currentBodySizes[iBody] = minimumSizePixels;
+            }
+    
+            if (currentBodySizes[iBody] > maximumSizePixels) {
+              currentBodySizes[iBody] = maximumSizePixels;
+            }
+    
+            bodyElemenets[iBody].style.width = currentBodySizes[iBody] + "px";
+          }
+        }
+    
+        function drawOrbitalLine(newPosition, previousPosition, color) {
+          if (previousPosition.x === null) {
+            previousPosition.x = newPosition.x;
+            previousPosition.y = newPosition.y;
+            return;
+          }
+    
+          context.beginPath();
+          context.strokeStyle = color;
+          context.moveTo(previousPosition.x, previousPosition.y);
+          context.lineTo(newPosition.x, newPosition.y);
+          context.stroke();
+    
+          previousPosition.x = newPosition.x;
+          previousPosition.y = newPosition.y;
+        }
+    
+        // Devuelve las posiciones x e y de un cuerpo en la pantalla en píxeles. 
+        // posición: posición x e y en metros desde el centro de la pantalla.
+        function calculatePosition(position) {
+          middleX = Math.floor(canvas.width / 2);
+          middleY = Math.floor(canvas.height / 2);
+          var centerX = position.x / metersPerPixel + middleX;
+          var centerY = -position.y / metersPerPixel + middleY;
+    
+          return {
+            x: centerX,
+            y: centerY
+          };
+        }
+    
+        
+        // Calculates the new positions of the bodies on screen 
+        // from the given state variables
+        function calculateNewPositions(statePositions) {
+          // bucle a traves de los cuerpos
+          for (var iBody = 0; iBody < statePositions.length / 4; iBody++) {
+            var bodyStart = iBody * 4; // 
+            // Índice de inicio para el cuerpo actual en la matriz u
+    
+            var x = statePositions[bodyStart + 0];
+            var y = statePositions[bodyStart + 1];
+    
+            middleX = Math.floor(canvas.width / 2);
+            middleY = Math.floor(canvas.height / 2);
+            bodyPositions[iBody].x = x / metersPerPixel + middleX;
+            bodyPositions[iBody].y = -y / metersPerPixel + middleY;
+          }
+        }
+    
+        function drawBodies() {
+          // bucle a traves de los cuerpos
+          for (var iBody = 0; iBody < bodyPositions.length; iBody++) {
+            var bodyPosition = bodyPositions[iBody];
+            drawBody(bodyPosition, currentBodySizes[iBody], bodyElemenets[iBody]);
+          }
+        }
+    
+        function drawOrbitalLines(paleOrbitalPaths) {
+          // bucle a traves de los cuerpos
+          for (var iBody = 0; iBody < bodyPositions.length; iBody++) {
+            var bodyPosition = bodyPositions[iBody];
+            var orbitalPathColors = paleOrbitalPaths ? colors.paleOrbitalPaths : colors.orbitalPaths;
+            drawOrbitalLine(bodyPosition, previousBodyPositions[iBody], orbitalPathColors[iBody]);
+          }
+        }
+    
+        function showCanvasNotSupportedMessage() {
+          document.getElementById("ThreeBodyProblem-notSupportedMessage").style.display ='block';
+        }
+    
+        // Cambiar el tamaño del lienzo para que tenga el ancho del contenedor
+        
+        function fitToContainer(){
+    
+          
+          //ajusta el canvas al tamaño de la pantalla
+          canvasHeight = Math.min(window.innerHeight, window.innerWidth) - 100;
+          document.querySelector(".ThreeBodyProblem-container").style.height = canvasHeight + 'px';
+    
+          canvas.style.width='100%';
+          canvas.style.height= canvasHeight + 'px';
+          canvas.width  = canvas.offsetWidth;
+          canvas.height = canvas.offsetHeight;
+        }
+    
+       
+            // Devuelve verdadero en caso de error y falso en caso de éxito
+        function initCanvas() {
+
+          // encuentra el elemento canvas del HTML
+          canvas = document.querySelector(".ThreeBodyProblem-canvas");
+    
+          
+        // Comprueba si el navegador admite el dibujo en lienzo
+          if (!(window.requestAnimationFrame && canvas && canvas.getContext)) { return true; }
+    
+          // Obtener el contexto del lienzo para dibujar
+          context = canvas.getContext("2d");
+          if (!context) { return true; } // Error, el navegador no es compatible con canvas
+          return false;
+        }
+    
+       
+            // Crear un lienzo para dibujar y llamar al argumento de éxito
+        function init(success) {
+          if (initCanvas()) {
+           
+            // El navegador no puede usar canvas. Mostrar un mensaje de advertencia.
+            showCanvasNotSupportedMessage();
+            return;
+          }
+    
+          
+        // Actualizar el tamaño del lienzo
+          fitToContainer();
+    
+          var earthElement = document.querySelector(".ThreeBodyProblem-earth");
+          var sunElement = document.querySelector(".ThreeBodyProblem-sun");
+          var jupiterElement = document.querySelector(".ThreeBodyProblem-jupiter");
+    
+          bodyElemenets = [];
+          bodyElemenets.push(sunElement);
+          bodyElemenets.push(earthElement);
+          bodyElemenets.push(jupiterElement);
+    
+          // Ejecuta la función de devolución de llamada exitosa
+          success();
+        }
+    
+        function clearScene(largestDistanceMeters) {
+          context.clearRect(0, 0, canvas.width, canvas.height);
+          previousBodyPositions = [
+            {x: null, y: null},
+            {x: null, y: null},
+            {x: null, y: null}
+          ];
+    
+          // Actualizar la escala
+          metersPerPixel = 2.3 * largestDistanceMeters / Math.min(canvas.offsetWidth, canvas.offsetHeight, window.innerHeight);
+        }
+    
+        return {
+          fitToContainer: fitToContainer,
+          drawOrbitalLines: drawOrbitalLines,
+          drawBodies: drawBodies,
+          updateObjectSizes: updateObjectSizes,
+          clearScene: clearScene,
+          calculateNewPositions: calculateNewPositions,
+          init: init
+        };
+      })();
+    
+      //inicia la simulacion
+      var simulation = (function() {
+       // El número de cálculos realizados en un cuadro de 16 milisegundos. 
+       // Cuanto mayor sea el número, más precisos son los cálculos y más lenta la simulación.
+        var calculationsPerFrame = 250;
+    
+        var framesPerSecond = 60; // Number of frames per second
+    
+        // El número de cálculos realizados en un marco de 16 milisegundos. 
+        // T
+        // Número máximo de veces que se dibujan las líneas orbitales por cuadro. 
+        // Para mejorar el rendimiento, no dibujamos después de cada cálculo, ya que dibujar puede ser lento. Cuanto mayor sea el número, más precisos serán los cálculos y más lenta la simulación.
+        var drawTimesPerFrame = 10;
+    
+        
+        // Usado para decidir si necesitamos dibujar en los cálculos
+        var drawIndex =  Math.ceil(calculationsPerFrame / drawTimesPerFrame);
+    
+        
+        // El método se llama 60 veces por segundo
+        function animate() {   
+        // El paso de tiempo en segundos usado en la simulación
+          var timestep = physics.initialConditions.timeScaleFactor / framesPerSecond / calculationsPerFrame;
+    
+          for (var i = 0; i < calculationsPerFrame; i++) {
+            physics.updatePosition(timestep);
+    
+           
+        // Decide si necesitamos dibujar líneas orbitales
+            if (i % drawIndex === 0) {
+              graphics.calculateNewPositions(physics.state.u);
+              graphics.drawOrbitalLines(physics.initialConditions.paleOrbitalPaths);
+            }
+          }
+    
+         // Mueve los cuerpos a una nueva posición. Esto puede ser lento, porque 
+         // actualiza la posición de los elementos DOM. 
+         // Eso, lo llamará solo una vez por cuadro.
+          graphics.drawBodies();
+    
+          window.requestAnimationFrame(animate);
+        }
+    
+        function start() {
+          graphics.init(function() {
+            physics.resetStateToInitialConditions();
+            graphics.clearScene(physics.largestDistanceMeters());
+            graphics.updateObjectSizes(physics.calculateDiameters());
+    
+            
+        // Redibujar la escena si se cambia el tamaño de la página
+            window.addEventListener('resize', function(event){
+              graphics.fitToContainer();
+              graphics.clearScene(physics.largestDistanceMeters());
+              graphics.calculateNewPositions(physics.state.u);
+              graphics.drawOrbitalLines(physics.initialConditions.paleOrbitalPaths);
+              graphics.drawBodies();
+            });
+    
+            animate();
+          });
+        }
+    
+        return {
+          start: start
+        };
+      })();
+    
+      // Helper functions for dealing with CSS
+      var cssHelper = (function(){
+        function hasClass(element, className) {
+          return (' ' + element.className + ' ').indexOf(' ' + className+ ' ') > -1;
+        }
+    
+        function removeClass(element, className) {
+          element.className = element.className
+                .replace(new RegExp('(?:^|\\s)'+ className + '(?:\\s|$)'), ' ');
+        }
+    
+        function addClass(element, className) {
+          if (hasClass(element, className)) return;
+          element.className += " " + className;
+        }
+    
+        return {
+            hasClass: hasClass,
+            removeClass: removeClass,
+            addClass: addClass
+          };
+      })();
+    
+      
+        // Los ajustes preestablecidos para diferentes simulaciones
+      var simulations = (function(){
+        var content = {
+          didChangeModel: null // controlador de función que se llama cuando el usuario cambia un modelo
+        };
+    
+        var vigure8Position = {x: 0.97000436, y: -0.24308753};
+        var vigure8Velocity = {x: -0.93240737, y: -0.86473146};
+    
+        function polarFromCartesian(coordinates) {
+          var angle;
+    
+          if (coordinates.x === 0) {
+            angle = 0;
+          } else {
+            angle = Math.atan2(coordinates.y, coordinates.x);
+          }
+    
+          return {
+            r: Math.sqrt(Math.pow(coordinates.x, 2) + Math.pow(coordinates.y, 2)),
+            theta: angle
+          };
+        }
+    
+    
+      // La lista de simulaciones que se muestra al usuario. 
+      // ------------------------- 
+      // 
+      // adimensional: falso si las masas se dan en kilogramos, verdadero si las masas son cercanas a 1. 
+      // 
+      // masses: Masas de los cuerpos en kilogramos 
+      // timeScaleFactor: 
+      // El número de segundos avanzados por el modelo en un segundo de la animación 
+      // Se usa para acelerar las cosas, para que el usuario no espere un año por el modelo 
+      // de la Tierra giran alrededor del Sol 
+      // posiciones: Posiciones de los cuerpos en coordenadas polares, r está en metros 
+      // velocidades: Velocidades de los cuerpos en coordenadas polares, r está en m/s 
+      // densidades: Densidades opcionales (kg/ m^3). Esta es una forma de modificar el tamaño del objeto, ya que las densidades 
+      // se usan para estimar el radio de un objeto a partir de su masa. // Si no se proporciona, se utiliza la densidad media del sol. 
+      // paleOrbitalPaths: si es verdadero, la ruta orbital es más pálida de lo habitual. 
+      //
+        var allPresets = {
+          "FigureEight": {
+            dimensionless: true,
+            masses: [1, 1, 1],
+            massSlider: {
+              min: 0.1,
+              max: 5,
+              power: 3
+            },
+            timeScaleFactor: 1,
+            timeScaleFactorSlider: {
+              min: 0.00,
+              max: 5000,
+              power: 5
+            },
+            positions: [ // en coordenadas polares, r está en metros
+              polarFromCartesian(vigure8Position),
+              polarFromCartesian({x: -vigure8Position.x, y: -vigure8Position.y}),
+              polarFromCartesian({x: 0, y: 0})
+            ],
+            velocities: [ // en coordenadas polares, r está en m/s
+              polarFromCartesian({x: -vigure8Velocity.x / 2, y: -vigure8Velocity.y/2}),
+              polarFromCartesian({x: -vigure8Velocity.x / 2, y: -vigure8Velocity.y/2}),
+              polarFromCartesian(vigure8Velocity)
+            ]
+          },
+          "SunEarthJupiter": {
+            masses: [1.98855 * Math.pow(10, 30), 5.972 * Math.pow(10, 24), 1.898 * Math.pow(10, 27)],
+            densities: [0.01, 0.01, 0.01],
+            massSlider: {
+              min: 3 * Math.pow(10, 10),
+              max: 3 * Math.pow(10, 31),
+              power: 3
+            },
+            timeScaleFactor: 3600 * 24 * 365,
+            timeScaleFactorSlider: {
+              min: 0,
+              max: 3600 * 24 * 500 * 10000,
+              power: 5
+            },
+            positions: [// en coordenadas polares, r está en metros
+              {
+                r: 0,
+                theta: 0
+              },
+              {
+                r: 1.496 * Math.pow(10, 11),
+                theta: 0
+              },
+              {
+                r: 7.78 * Math.pow(10, 11),
+                theta: 0
+              }
+            ],
+            velocities: [ //  en coordenadas polares, r está en m/s
+              {
+                r: 0,
+                theta: Math.PI/2
+              },
+              {
+                r: 30 * Math.pow(10, 3),
+                theta: Math.PI/2
+              },
+              {
+                r: 13.1 * Math.pow(10, 3),
+                theta: Math.PI/2
+              }
+            ]
+          },
+          "LagrangePoint5": {
+            masses: [1.98855 * Math.pow(10, 30), 5.972 * Math.pow(10, 24), 1.898 * Math.pow(10, 28)],
+            densities: [0.001, 0.0001, 0.0001],
+            paleOrbitalPaths: true,
+            massSlider: {
+              min: 3 * Math.pow(10, 10),
+              max: 3 * Math.pow(10, 31),
+              power: 5
+            },
+            timeScaleFactor: 3600 * 24 * 1000,
+            timeScaleFactorSlider: {
+              min: 0,
+              max: 3600 * 24 * 500 * 10000,
+              power: 5
+            },
+            positions: [ // en coordenadas polares, r está en metros
+              {
+                r: 0,
+                theta: 0
+              },
+              {
+                r: 7.5 * Math.pow(10, 11),
+                theta: -Math.PI/3 - Math.PI/10
+              },
+              {
+                r: 7.78 * Math.pow(10, 11),
+                theta: 0
+              }
+            ],
+            velocities: [ // en coordenadas polares, r está en m/s
+              {
+                r: 0,
+                theta: Math.PI/2
+              },
+              {
+                r: 13.3 * Math.pow(10, 3),
+                theta: Math.PI/6 - Math.PI/10
+              },
+              {
+                r: 13.1 * Math.pow(10, 3),
+                theta: Math.PI/2
+              }
+            ]
+          },
+          "Kepler16": {
+            masses: [0.6897 * 1.98855 * Math.pow(10, 30), 0.20255 * 1.98855 * Math.pow(10, 30), 0.3333 * 1.898 * Math.pow(10, 27)],
+            massSlider: {
+              min: 3 * Math.pow(10, 10),
+              max: 3 * Math.pow(10, 31),
+              power: 5
+            },
+            timeScaleFactor: 3600 * 24 * 41,
+            timeScaleFactorSlider: {
+              min: 0,
+              max: 3600 * 24 * 500 * 100,
+              power: 5
+            },
+            positions: [ // en coordenadas polares, r está en metros
+              {
+                r: (0.20255 * 0.22431 * 1.496 * Math.pow(10, 11)) / (0.6897 + 0.20255 ),
+                theta: 0
+              },
+              {
+                r: (0.6897 * 0.22431 * 1.496 * Math.pow(10, 11)) / (0.6897 + 0.20255 ),
+                theta: Math.PI
+              },
+              {
+                r: 0.7048 * 1.496 * Math.pow(10, 11),
+                theta: 0
+              }
+            ],
+            velocities: [// en coordenadas polares, r está en m/s
+              {
+                r: 13 * Math.pow(10, 3),
+                theta: Math.PI/2
+              },
+              {
+                r: 44 * Math.pow(10, 3),
+                theta: 3*Math.PI/2
+              },
+              {
+                r: 33 * Math.pow(10, 3),
+                theta: Math.PI/2
+              }
+            ]
+          },
+          "Chaotic": {
+            dimensionless: true,
+            masses: [1, 1, 1],
+            massSlider: {
+              min: 0.1,
+              max: 10,
+              power: 3
+            },
+            timeScaleFactor: 3.9335,
+            timeScaleFactorSlider: {
+              min: 0.00,
+              max: 100,
+              power: 3
+            },
+            positions: [ 
+            // en coordenadas polares, r está en m/s
+              {
+                r: 1,
+                theta: 0
+              },
+              {
+                r: 1,
+                theta: 2*Math.PI/3
+              },
+              {
+                r: 1,
+                theta: 4*Math.PI/3
+              }
+            ],
+            velocities: [  // en coordenadas polares, r está en m/s
+              {
+                r: .55,
+                theta: Math.PI/2
+              },
+              {
+                r: .55,
+                theta: 2*Math.PI/3 + Math.PI/2
+              },
+              {
+                r: .55,
+                theta: 4*Math.PI/3 + Math.PI/2
+              }
+            ]
+          },
+        };
+    
+        function didClickElement(element) {
+          if (!cssHelper.hasClass(element, "ThreeBodyProblem-preset")) {
+            didClickElement(element.parentElement);
+            return;
+          }
+    
+          var name = element.getAttribute("data-name");
+          var preset = allPresets[name];
+    
+          if (content.didChangeModel !== null) {
+            content.didChangeModel(preset);
+          }
+    
+          //Marcar el elemento actual como seleccionado
+          // -----------
+    
+          var presetElements = document.querySelectorAll(".ThreeBodyProblem-preset");
+    
+          
+        // Bucle a través de los ajustes preestablecidos
+          for (var iPreset = 0; iPreset < presetElements.length; iPreset++) {
+            var presetElement = presetElements[iPreset];
+            cssHelper.removeClass(presetElement, 'ThreeBodyProblem-button--isSelected');
+          }
+          cssHelper.addClass(element, "ThreeBodyProblem-button--isSelected");
+        }
+    
+        function didClick(e) {
+          if (!e) { e = window.event; }
+          didClickElement(e.target);
+        }
+    
+        function init() {
+          var presetElements = document.querySelectorAll(".ThreeBodyProblem-preset");
+    
+              // Bucle a través de los ajustes preestablecidos
+          for (var iPreset = 0; iPreset < presetElements.length; iPreset++) {
+            var presetElement = presetElements[iPreset];
+            presetElement.onclick = didClick;
+          }
+    
+          return allPresets.FigureEight;
+        }
+    
+        return {
+          init: init,
+          content: content
+        };
+      })();
+    
+     // Un control deslizante asigna una entrada a valores de salida, ambos entre 0 y 1 usando una función de potencia impar. 
+     // La función está construida de tal manera que no es muy sensible al valor de salida predeterminado 
+     // (por ejemplo, el valor inicial para la masa de un objeto) 
+     // pero cambia rápidamente cuando el control deslizante se aleja de él.
+      var oddPowerCurve = (function(){
+        function calcualteL(defaultOutput, power) {
+          if (power === 0) return 1;
+          return -Math.pow(defaultOutput, 1 / power);
+        }
+    
+        function calcualteA(defaultOutput, power) {
+          if (power === 0) return 1;
+          return Math.pow(1 - defaultOutput, 1 / power) - calcualteL(defaultOutput, power);
+        }
+    
+        // Devuelve el valor de entrada del control deslizante en función de la salida y los valores de salida predeterminados
+        function sliderInputValue(defaultOutput, output, power) {
+          if (power === 0) return 1;
+          var a = calcualteA(defaultOutput, power);
+          if (a === 0) { a = 1; }
+          var l = calcualteL(defaultOutput, power);
+          var sign = (output - defaultOutput) < 0 ? -1 : 1;
+          return (sign * Math.pow(Math.abs(output - defaultOutput), 1 / power) - l) / a;
+        }
+    
+        
+        // Devolver el valor de salida del control deslizante en función de los valores de entrada y salida predeterminados
+        function sliderOutputValue(defaultOutput, intput, power) {
+          if (power === 0) return 1;
+          var a = calcualteA(defaultOutput, power);
+          var l = calcualteL(defaultOutput, power);
+    
+          var result = Math.pow(a * intput + l, power) + defaultOutput;
+          if (result < 0) { result = 0; }
+          return result;
+        }
+    
+        return {
+            sliderInputValue: sliderInputValue,
+            sliderOutputValue: sliderOutputValue
+          };
+      })();
+    
+     
+        // Reaccionar a la entrada del usuario
+      var userInput = (function(){
+        var sliderLabelElement = document.querySelector(".ThreeBodyProblem-sliderLabel");
+        var restartButton = document.querySelector(".ThreeBodyProblem-reload");
+        var mass1Button = document.querySelector(".ThreeBodyProblem-mass1Button");
+        var mass2Button = document.querySelector(".ThreeBodyProblem-mass2Button");
+        var mass3Button = document.querySelector(".ThreeBodyProblem-mass3Button");
+        var speedButton = document.querySelector(".ThreeBodyProblem-speedButton");
+        var sliderElement = document.querySelector(".ThreeBodyProblem-slider");
+        var slider;
+        var currentSlider = "mass";
+        var currentMassSliderIndex = 0;
+        var currentModel; // modelo actual seleccionado
+    
+       // Devuelve el valor de salida del control deslizante entre 0 y 1 correspondiente al 
+       // valor predeterminado de la variable (como la masa predeterminada de un objeto)
+        function calculateDefaultSliderOutput(sliderSettings) {
+          var defaultValue = getCurrentSimulationValue(currentModel);
+          return (defaultValue - sliderSettings.min) / (sliderSettings.max - sliderSettings.min);
+        }
+    
+        function didUpdateSlider(sliderValue) {
+          var sliderText;
+          var sliderSettings = getCurrentSliderSettings();
+    
+    
+          if (sliderSettings.power !== undefined) {
+    
+            if (sliderSettings.power % 2 === 1) { // poder impar
+              var defaultOutput = calculateDefaultSliderOutput(sliderSettings);
+              sliderValue = oddPowerCurve.sliderOutputValue(defaultOutput, sliderValue, sliderSettings.power);
+            } else {
+              sliderValue = Math.pow(sliderValue, sliderSettings.power);
+            }
+          }
+    
+          var newValue = sliderSettings.min + (sliderSettings.max - sliderSettings.min) * sliderValue;
+          newValue = roundSliderValue(newValue);
+    
+          if (currentSlider === "mass") {
+            physics.initialConditions.masses[currentMassSliderIndex] = newValue;
+            graphics.updateObjectSizes(physics.calculateDiameters());
+            sliderText = formatMassForSlider(newValue);
+          } else {
+            physics.initialConditions.timeScaleFactor = newValue;
+            sliderText = formatTimescaleForSlider(newValue);
+          }
+    
+          sliderLabelElement.innerText = sliderText;
+        }
+    
+        function getCurrentSliderSettings() {
+          var sliderSettings;
+    
+          if (currentSlider === "mass") {
+            sliderSettings = physics.initialConditions.massSlider;
+          } else {
+            sliderSettings = physics.initialConditions.timeScaleFactorSlider;
+          }
+    
+          return sliderSettings;
+        }
+    
+        function roundSliderValue(value) {
+          return Math.round(value * 10000) / 10000;
+        }
+    
+        function roundSliderValueText(value) {
+          return parseFloat(Math.round(value * 10000) / 10000).toFixed(4);
+        }
+    
+        function bodyNameFromIndex(index) {
+          switch(index) {
+            case 0:
+                return "el sol";
+            case 1:
+                return "la tierra";
+            default:
+                return "otro planeta";
+          }
+        }
+    
+        function formatMassForSlider(mass) {
+          var formatted = roundSliderValueText(mass);
+    
+          if (mass > 10000) {
+            formatted = mass.toExponential(4);
+          }
+    
+          formatted = "Masa de " + bodyNameFromIndex(currentMassSliderIndex) + " : " + formatted;
+    
+          if (physics.initialConditions.dimensionless !== true) {
+            formatted += " kg";
+          }
+    
+          return formatted;
+        }
+    
+        function formatTimescaleForSlider(value) {
+          var timeHumanized = timeHumanReadable(value);
+          var formatted = roundSliderValueText(timeHumanized.value);
+    
+          if (timeHumanized.value > 10000) {
+            formatted = timeHumanized.value.toExponential(4);
+          }
+    
+          formatted = "velocidad de la simulacion: " + formatted + " " + timeHumanized.unit + " por segundo";
+    
+          return formatted;
+        }
+    
+        function timeHumanReadable(time) {
+          var result = {
+            unit: 'segundo',
+            value: time
+          };
+    
+          if (result.value < 60) {
+            return result;
+          }
+    
+          result.value /= 60;
+          result.unit = 'minute';
+    
+          if (result.value < 60) {
+            return result;
+          }
+    
+          result.value /= 60;
+          result.unit = 'hour';
+    
+          if (result.value < 24) {
+            return result;
+          }
+    
+          result.value /= 24;
+          result.unit = 'day';
+    
+          if (result.value < 365) {
+            return result;
+          }
+    
+          result.value /= 365;
+          result.unit = 'year';
+    
+          if (result.value < 100) {
+            return result;
+          }
+    
+          result.value /= 100;
+          result.unit = 'century';
+    
+          return result;
+        }
+    
+        function didClickRestart() {
+          physics.resetStateToInitialConditions();
+          graphics.clearScene(physics.largestDistanceMeters());
+          graphics.updateObjectSizes(physics.calculateDiameters());
+          return false; // Prevnir fallo
+        }
+    
+        function getCurrentSimulationValue(model) {
+          var simulationValue;
+          if (currentSlider === "mass") {
+            simulationValue = model.masses[currentMassSliderIndex];
+          } else {
+            simulationValue = model.timeScaleFactor;
+          }
+          return simulationValue;
+        }
+    
+        function resetSlider() {
+          cssHelper.removeClass(sliderElement, "ThreeBodyProblem-sliderSun");
+          cssHelper.removeClass(sliderElement, "ThreeBodyProblem-sliderEarth");
+          cssHelper.removeClass(sliderElement, "ThreeBodyProblem-sliderJupiter");
+    
+          var sliderSettings = getCurrentSliderSettings();
+          var simulationValue = getCurrentSimulationValue(physics.initialConditions);
+          var sliderText;
+    
+          if (currentSlider === "mass") {
+            sliderText = formatMassForSlider(physics.initialConditions.masses[currentMassSliderIndex]);
+    
+            switch(currentMassSliderIndex) {
+                case 0:
+                    cssHelper.addClass(sliderElement, "ThreeBodyProblem-sliderSun");
+                    break;
+                case 1:
+                    cssHelper.addClass(sliderElement, "ThreeBodyProblem-sliderEarth");
+                    break;
+                default:
+                    cssHelper.addClass(sliderElement, "ThreeBodyProblem-sliderJupiter");
+            }
+          } else {
+            sliderText = formatTimescaleForSlider(physics.initialConditions.timeScaleFactor);
+          }
+    
+          sliderLabelElement.innerText = sliderText;
+          var sliderPosition = (simulationValue - sliderSettings.min) / (sliderSettings.max - sliderSettings.min);
+    
+          if (sliderSettings.power !== undefined) {
+            if (sliderSettings.power % 2 === 1) { // poder impar
+              var defaultOutput = calculateDefaultSliderOutput(sliderSettings);
+              sliderPosition = oddPowerCurve.sliderInputValue(defaultOutput, sliderPosition, sliderSettings.power);
+            } else {
+              sliderPosition = Math.pow(sliderPosition, 1 / sliderSettings.power);
+            }
+          }
+    
+          slider.changePosition(sliderPosition);
+        }
+    
+        function didChangeModel(model) {
+          currentModel = model;
+          physics.changeInitialConditions(currentModel);
+          didClickRestart();
+          resetSlider();
+        }
+    
+        function didClickMass1() {
+          currentSlider = "mass";
+          currentMassSliderIndex = 0;
+          resetSlider();
+          return false; // Prevenir error
+        }
+    
+        function didClickMass2() {
+          currentSlider = "mass";
+          currentMassSliderIndex = 1;
+          resetSlider();
+          return false; // Prevenir error
+        }
+    
+        function didClickMass3() {
+          currentSlider = "mass";
+          currentMassSliderIndex = 2;
+          resetSlider();
+          return false; // Prevenir error
+        }
+    
+        function didClickSpeed() {
+          currentSlider = "speed";
+          currentMassSliderIndex = 0;
+          resetSlider();
+          return false; // Prevenir error
+        }
+    
+        function init() {
+          currentModel = simulations.init();
+          physics.changeInitialConditions(currentModel);
+          simulations.content.didChangeModel = didChangeModel;
+    
+          //deslizante
+          slider = SickSlider(".ThreeBodyProblem-slider");
+          slider.onSliderChange = didUpdateSlider;
+          resetSlider();
+    
+          // Botones
+          restartButton.onclick = didClickRestart;
+          mass1Button.onclick = didClickMass1;
+          mass2Button.onclick = didClickMass2;
+          mass3Button.onclick = didClickMass3;
+          speedButton.onclick = didClickSpeed;
+        }
+    
+        return {
+          init: init
+        };
+      })();
+    
+      userInput.init();
+    
+      simulation.start();
+    })();
+    
+    </script>
+    
